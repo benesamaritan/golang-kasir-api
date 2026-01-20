@@ -16,9 +16,18 @@ type Produk struct {
 }
 
 var produk = []Produk{
-	{ID: 1, Nama: "Indomie Godog", Harga: 3500, Stok: 10},
-	{ID: 2, Nama: "Vit 1000ml", Harga: 3000, Stok: 40},
-	{ID: 3, Nama: "kecap", Harga: 12000, Stok: 20},
+	{
+		ID:    1,
+		Nama:  "Mie Goreng Sambal Ijo",
+		Harga: 18000,
+		Stok:  15,
+	},
+	{
+		ID:    2,
+		Nama:  "Mie Goreng Ayam Geprek",
+		Harga: 25000,
+		Stok:  8,
+	},
 }
 
 func getProdukByID(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +37,6 @@ func getProdukByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Produk ID", http.StatusBadRequest)
 		return
 	}
-
 	for _, p := range produk {
 		if p.ID == id {
 			w.Header().Set("Content-Type", "application/json")
@@ -36,7 +44,6 @@ func getProdukByID(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
 	http.Error(w, "Produk belum ada", http.StatusNotFound)
 }
 
@@ -92,7 +99,6 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(map[string]string{
 				"message": "sukses delete",
 			})
-
 			return
 		}
 	}
@@ -113,7 +119,6 @@ func main() {
 		} else if r.Method == "DELETE" {
 			deleteProduk(w, r)
 		}
-
 	})
 
 	// GET localhost:8080/api/produk
@@ -139,7 +144,6 @@ func main() {
 			w.WriteHeader(http.StatusCreated) // 201
 			json.NewEncoder(w).Encode(produkBaru)
 		}
-
 	})
 
 	// localhost:8080/health
