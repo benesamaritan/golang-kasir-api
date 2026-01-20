@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "packages": [
+    "go@latest",
+    "gopls@latest",
+    "delve@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null",
+      "export \"GOROOT=$(go env GOROOT)\""
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}
