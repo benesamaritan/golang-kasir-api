@@ -1,7 +1,7 @@
-package main
+package main // baris ini kasih tau Go kalau ini file yang menjadi entry point
 
-import (
-	"encoding/json"
+import ( // import standard libraries Go, apa yang diimport, harus dipake
+	"encoding/json" // translator data Go (structs) menjadi JSON dan sebalinknya (2 arah)
 	"fmt"
 	"net/http"
 	"os"
@@ -14,8 +14,13 @@ func main() {
 	// Get port then assign
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8080" // port ini sebagai fallback
 	}
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Selamat Datang!")
+	})
+
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -24,6 +29,7 @@ func main() {
 			"message": "API Running",
 		})
 	})
+
 	// GET localhost:8080/api/produk/{id}
 	// PUT localhost:8080/api/produk/{id}
 	// DELETE localhost:8080/api/produk/{id}
@@ -36,6 +42,7 @@ func main() {
 			deleteProduk(w, r)
 		}
 	})
+
 	// GET localhost:8080/api/produk
 	// POST localhost:8080/api/produk
 	http.HandleFunc("/api/produk", func(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +65,7 @@ func main() {
 			json.NewEncoder(w).Encode(produkBaru)
 		}
 	})
+
 	fmt.Println("Server Bisa Diakses Pada localhost:", port)
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
