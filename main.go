@@ -21,15 +21,6 @@ func main() {
 		fmt.Fprint(w, "Selamat Datang!")
 	})
 
-	// :port/api
-	// http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	json.NewEncoder(w).Encode(map[string]string{
-	// 		"status":  "OK",
-	// 		"Message": "API Running Good",
-	// 	})
-	// })
-
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -39,45 +30,19 @@ func main() {
 		})
 	})
 
-	// GET localhost:8080/api/produk/{id}
-	// PUT localhost:8080/api/produk/{id}
-	// DELETE localhost:8080/api/produk/{id}
 	http.HandleFunc("/api/produk/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case http.MethodGet:
 			getProdukByID(w, r)
-		} else if r.Method == "PUT" {
+		case http.MethodPut:
 			updateProduk(w, r)
-		} else if r.Method == "DELETE" {
+		case http.MethodDelete:
 			deleteProduk(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
-	// GET localhost:8080/api/produk
-	// POST localhost:8080/api/produk
-	http.HandleFunc("/api/produk", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(produk)
-		} else if r.Method == "POST" {
-			// baca data dari request
-			var produkBaru Produk
-			err := json.NewDecoder(r.Body).Decode(&produkBaru)
-			if err != nil {
-				http.Error(w, "Invalid request", http.StatusBadRequest)
-				return
-			}
-			// masukkin data ke dalam variable produk
-			produkBaru.ID = len(produk) + 1
-			produk = append(produk, produkBaru)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusCreated) // 201
-			json.NewEncoder(w).Encode(produkBaru)
-		}
-	})
-
-	// ===
-	// Bagian Kategori
-	// ===
 	http.HandleFunc("/api/kategori/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -247,18 +212,21 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 
 // Bagian Kategori
 type Kategori struct {
-	ID   int    `json:"id"`
-	Nama string `json:"nama"`
+	ID        int    `json:"id"`
+	Nama      string `json:"nama"`
+	Deskripsi string `json:"deskripsi"`
 }
 
 var kategori = []Kategori{
 	{
-		ID:   1,
-		Nama: "Makanan",
+		ID:        1,
+		Nama:      "Makanan",
+		Deskripsi: "Makanan Halal",
 	},
 	{
-		ID:   2,
-		Nama: "Minuman",
+		ID:        2,
+		Nama:      "Minuman",
+		Deskripsi: "Minuman Halal",
 	},
 }
 
