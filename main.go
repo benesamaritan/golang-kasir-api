@@ -22,13 +22,13 @@ func main() {
 	})
 
 	// :port/api
-	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "OK",
-			"Message": "API Running Good",
-		})
-	})
+	// http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	json.NewEncoder(w).Encode(map[string]string{
+	// 		"status":  "OK",
+	// 		"Message": "API Running Good",
+	// 	})
+	// })
 
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -79,20 +79,24 @@ func main() {
 	// Bagian Kategori
 	// ===
 	http.HandleFunc("/api/kategori/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case http.MethodGet:
 			getKategoriByID(w, r)
-		} else if r.Method == "PUT" {
+		case http.MethodPut:
 			updateKategori(w, r)
-		} else if r.Method == "DELETE" {
+		case http.MethodDelete:
 			deleteKategori(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
 	http.HandleFunc("/api/kategori", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(kategori)
-		} else if r.Method == "POST" {
+		case http.MethodPost:
 			// baca data dari request
 			var kategoriBaru Kategori
 			err := json.NewDecoder(r.Body).Decode(&kategoriBaru)
@@ -100,11 +104,15 @@ func main() {
 				http.Error(w, "Invalid request", http.StatusBadRequest)
 				return
 			}
+
 			kategoriBaru.ID = len(kategori) + 1
 			kategori = append(kategori, kategoriBaru)
+
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated) // 201
 			json.NewEncoder(w).Encode(kategoriBaru)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
