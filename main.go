@@ -128,6 +128,7 @@ type Produk struct {
 	Nama  string `json:"nama"`
 	Harga int    `json:"harga"`
 	Stok  int    `json:"stok"`
+	// KategoriID
 }
 
 var produk = []Produk{
@@ -221,24 +222,18 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 }
 
 type Kategori struct {
-	ID    int    `json:"id"`
-	Nama  string `json:"nama"`
-	Harga int    `json:"harga"`
-	Stok  int    `json:"stok"`
+	ID   int    `json:"id"`
+	Nama string `json:"nama"`
 }
 
 var kategori = []Kategori{
 	{
-		ID:    1,
-		Nama:  "Mie Goreng Sambal Ijo",
-		Harga: 18000,
-		Stok:  15,
+		ID:   1,
+		Nama: "Makanan",
 	},
 	{
-		ID:    2,
-		Nama:  "Mie Goreng Ayam Geprek",
-		Harga: 25000,
-		Stok:  8,
+		ID:   2,
+		Nama: "Minuman",
 	},
 }
 
@@ -249,10 +244,10 @@ func getKategoriByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
 		return
 	}
-	for _, p := range kategori {
-		if p.ID == id {
+	for _, k := range kategori {
+		if k.ID == id {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(p)
+			json.NewEncoder(w).Encode(k)
 			return
 		}
 	}
@@ -261,30 +256,22 @@ func getKategoriByID(w http.ResponseWriter, r *http.Request) {
 
 // Bagian Kategori
 func updateKategori(w http.ResponseWriter, r *http.Request) {
-	// get id dari request
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
-
-	// ganti int
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
 		return
 	}
-
-	// get data dari request
 	var updateKategori Kategori
 	err = json.NewDecoder(r.Body).Decode(&updateKategori)
 	if err != nil {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-
-	// loop kategori, cari id, ganti sesuai data dari request
 	for i := range kategori {
 		if kategori[i].ID == id {
 			updateKategori.ID = id
 			kategori[i] = updateKategori
-
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(updateKategori)
 			return
@@ -294,18 +281,14 @@ func updateKategori(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteKategori(w http.ResponseWriter, r *http.Request) {
-	// get id
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
-	// ganti id int
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
 		return
 	}
-	// loop kategori cari ID, dapet index yang mau dihapus
-	for i, p := range kategori {
-		if p.ID == id {
-			// bikin slice baru dengan data sebelum dan sesudah index
+	for i, k := range kategori {
+		if k.ID == id {
 			kategori = append(kategori[:i], kategori[i+1:]...)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]string{
