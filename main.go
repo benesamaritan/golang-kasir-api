@@ -43,6 +43,28 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/api/produk", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(produk)
+		case http.MethodPost:
+			var produkBaru Produk
+			err := json.NewDecoder(r.Body).Decode(&produkBaru)
+			if err != nil {
+				http.Error(w, "Invalid request", http.StatusBadRequest)
+				return
+			}
+			produkBaru.ID = len(produk) + 1
+			produk = append(produk, produkBaru)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated) // 201
+			json.NewEncoder(w).Encode(produkBaru)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
 	http.HandleFunc("/api/kategori/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -62,17 +84,14 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(kategori)
 		case http.MethodPost:
-			// baca data dari request
 			var kategoriBaru Kategori
 			err := json.NewDecoder(r.Body).Decode(&kategoriBaru)
 			if err != nil {
 				http.Error(w, "Invalid request", http.StatusBadRequest)
 				return
 			}
-
 			kategoriBaru.ID = len(kategori) + 1
 			kategori = append(kategori, kategoriBaru)
-
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated) // 201
 			json.NewEncoder(w).Encode(kategoriBaru)
