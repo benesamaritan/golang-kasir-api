@@ -21,6 +21,15 @@ func main() {
 		fmt.Fprint(w, "Selamat Datang!")
 	})
 
+	// :port/api
+	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"status":  "OK",
+			"Message": "API Running Good",
+		})
+	})
+
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -63,6 +72,39 @@ func main() {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated) // 201
 			json.NewEncoder(w).Encode(produkBaru)
+		}
+	})
+
+	// ===
+	// Bagian Kategori
+	// ===
+	http.HandleFunc("/api/kategori/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			getKategoriByID(w, r)
+		} else if r.Method == "PUT" {
+			updateKategori(w, r)
+		} else if r.Method == "DELETE" {
+			deleteKategori(w, r)
+		}
+	})
+
+	http.HandleFunc("/api/kategori", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(kategori)
+		} else if r.Method == "POST" {
+			// baca data dari request
+			var kategoriBaru Kategori
+			err := json.NewDecoder(r.Body).Decode(&kategoriBaru)
+			if err != nil {
+				http.Error(w, "Invalid request", http.StatusBadRequest)
+				return
+			}
+			kategoriBaru.ID = len(kategori) + 1
+			kategori = append(kategori, kategoriBaru)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated) // 201
+			json.NewEncoder(w).Encode(kategoriBaru)
 		}
 	})
 
@@ -168,4 +210,101 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	http.Error(w, "Produk belum ada", http.StatusNotFound)
+}
+
+type Kategori struct {
+	ID    int    `json:"id"`
+	Nama  string `json:"nama"`
+	Harga int    `json:"harga"`
+	Stok  int    `json:"stok"`
+}
+
+var kategori = []Kategori{
+	{
+		ID:    1,
+		Nama:  "Mie Goreng Sambal Ijo",
+		Harga: 18000,
+		Stok:  15,
+	},
+	{
+		ID:    2,
+		Nama:  "Mie Goreng Ayam Geprek",
+		Harga: 25000,
+		Stok:  8,
+	},
+}
+
+func getKategoriByID(w http.ResponseWriter, r *http.Request) {
+	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
+		return
+	}
+	for _, p := range kategori {
+		if p.ID == id {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(p)
+			return
+		}
+	}
+	http.Error(w, "Kategori belum ada", http.StatusNotFound)
+}
+
+// Bagian Kategori
+func updateKategori(w http.ResponseWriter, r *http.Request) {
+	// get id dari request
+	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
+
+	// ganti int
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
+		return
+	}
+
+	// get data dari request
+	var updateKategori Kategori
+	err = json.NewDecoder(r.Body).Decode(&updateKategori)
+	if err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// loop kategori, cari id, ganti sesuai data dari request
+	for i := range kategori {
+		if kategori[i].ID == id {
+			updateKategori.ID = id
+			kategori[i] = updateKategori
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(updateKategori)
+			return
+		}
+	}
+	http.Error(w, "Kategori belum ada", http.StatusNotFound)
+}
+
+func deleteKategori(w http.ResponseWriter, r *http.Request) {
+	// get id
+	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
+	// ganti id int
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
+		return
+	}
+	// loop kategori cari ID, dapet index yang mau dihapus
+	for i, p := range kategori {
+		if p.ID == id {
+			// bikin slice baru dengan data sebelum dan sesudah index
+			kategori = append(kategori[:i], kategori[i+1:]...)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{
+				"message": "sukses delete",
+			})
+			return
+		}
+	}
+	http.Error(w, "Kategori belum ada", http.StatusNotFound)
 }
