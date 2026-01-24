@@ -155,6 +155,14 @@ var produk = []Produk{
 	},
 }
 
+type ProdukResponse struct {
+	ID       int    `json:"id"`
+	Nama     string `json:"nama"`
+	Harga    int    `json:"harga"`
+	Stok     int    `json:"stok"`
+	Kategori string `json:"kategori"`
+}
+
 func getProdukByID(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/produk/")
 	id, err := strconv.Atoi(idStr)
@@ -164,8 +172,15 @@ func getProdukByID(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, p := range produk {
 		if p.ID == id {
+			response := ProdukResponse{
+				ID:       p.ID,
+				Nama:     p.Nama,
+				Harga:    p.Harga,
+				Stok:     p.Stok,
+				Kategori: getKategoriName(p.KategoriID),
+			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(p)
+			json.NewEncoder(w).Encode(response)
 			return
 		}
 	}
@@ -245,6 +260,15 @@ var kategori = []Kategori{
 		ID:   2,
 		Nama: "Minuman",
 	},
+}
+
+func getKategoriName(kategoriID int) string {
+	for _, k := range kategori {
+		if k.ID == kategoriID {
+			return k.Nama
+		}
+	}
+	return "Unknown"
 }
 
 func getKategoriByID(w http.ResponseWriter, r *http.Request) {
