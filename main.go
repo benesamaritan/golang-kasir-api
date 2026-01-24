@@ -124,25 +124,34 @@ func main() {
 }
 
 type Produk struct {
-	ID    int    `json:"id"`
-	Nama  string `json:"nama"`
-	Harga int    `json:"harga"`
-	Stok  int    `json:"stok"`
-	// KategoriID
+	ID         int    `json:"id"`
+	Nama       string `json:"nama"`
+	Harga      int    `json:"harga"`
+	Stok       int    `json:"stok"`
+	KategoriID int    `json:"kategori_id"`
 }
 
 var produk = []Produk{
 	{
-		ID:    1,
-		Nama:  "Mie Goreng Sambal Ijo",
-		Harga: 18000,
-		Stok:  15,
+		ID:         1,
+		Nama:       "Mie Goreng Sambal Ijo",
+		Harga:      18000,
+		Stok:       15,
+		KategoriID: 1,
 	},
 	{
-		ID:    2,
-		Nama:  "Mie Goreng Ayam Geprek",
-		Harga: 25000,
-		Stok:  8,
+		ID:         2,
+		Nama:       "Mie Goreng Ayam Geprek",
+		Harga:      25000,
+		Stok:       8,
+		KategoriID: 1,
+	},
+	{
+		ID:         3,
+		Nama:       "Es Teh",
+		Harga:      5000,
+		Stok:       100,
+		KategoriID: 2,
 	},
 }
 
@@ -221,6 +230,7 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Produk belum ada", http.StatusNotFound)
 }
 
+// Bagian Kategori
 type Kategori struct {
 	ID   int    `json:"id"`
 	Nama string `json:"nama"`
@@ -254,7 +264,6 @@ func getKategoriByID(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Kategori belum ada", http.StatusNotFound)
 }
 
-// Bagian Kategori
 func updateKategori(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
 	id, err := strconv.Atoi(idStr)
