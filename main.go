@@ -65,7 +65,7 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/api/kategori/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/categories/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			getKategoriByID(w, r)
@@ -78,7 +78,7 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/api/kategori", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/categories", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
@@ -140,11 +140,12 @@ var produk = []Produk{
 }
 
 type ProdukResponse struct {
-	ID       int    `json:"id"`
-	Nama     string `json:"nama"`
-	Harga    int    `json:"harga"`
-	Stok     int    `json:"stok"`
-	Kategori string `json:"kategori"`
+	ID        int    `json:"id"`
+	Nama      string `json:"nama"`
+	Harga     int    `json:"harga"`
+	Stok      int    `json:"stok"`
+	Kategori  string `json:"kategori"`
+	Deskripsi string `json:"deskripsi"`
 }
 
 func getProdukByID(w http.ResponseWriter, r *http.Request) {
@@ -162,6 +163,7 @@ func getProdukByID(w http.ResponseWriter, r *http.Request) {
 				Harga:    p.Harga,
 				Stok:     p.Stok,
 				Kategori: getKategoriName(p.KategoriID),
+				Deskripsi: getKategoriDeskripsi(p.KategoriID),
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(response)
@@ -188,6 +190,19 @@ func updateProduk(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&updateProduk)
 	if err != nil {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	kategoriExists := false
+	for _, k := range kategori {
+		if k.ID == updateProduk.KategoriID {
+			kategoriExists = true
+			break
+		}
+	}
+
+	if !kategoriExists {
+		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
 		return
 	}
 
@@ -240,12 +255,12 @@ var kategori = []Kategori{
 	{
 		ID:        1,
 		Nama:      "Makanan",
-		Deskripsi: "Makanan Halal",
+		Deskripsi: "Halal",
 	},
 	{
 		ID:        2,
 		Nama:      "Minuman",
-		Deskripsi: "Minuman Halal",
+		Deskripsi: "Halal",
 	},
 }
 
@@ -258,8 +273,17 @@ func getKategoriName(kategoriID int) string {
 	return "Unknown"
 }
 
+func getKategoriDeskripsi(kategoriID int) string {
+	for _, k := range kategori {
+		if k.ID == kategoriID {
+			return k.Deskripsi
+		}
+	}
+	return "Unknown"
+}
+
 func getKategoriByID(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
+	idStr := strings.TrimPrefix(r.URL.Path, "/categories/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
@@ -276,7 +300,7 @@ func getKategoriByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateKategori(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
+	idStr := strings.TrimPrefix(r.URL.Path, "/categories/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
@@ -301,7 +325,7 @@ func updateKategori(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteKategori(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/api/kategori/")
+	idStr := strings.TrimPrefix(r.URL.Path, "/categories/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid Kategori ID", http.StatusBadRequest)
