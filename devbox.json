@@ -3,7 +3,8 @@
   "packages": [
     "go@latest",
     "gopls@latest",
-    "delve@latest"
+    "delve@latest",
+    "postgresql@latest"
   ],
   "shell": {
     "init_hook": [
