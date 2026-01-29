@@ -21,6 +21,13 @@ Scripts are custom commands that can be run using this project's environment. Th
 
 * [test](#devbox-run-test)
 
+## Environment
+
+```sh
+PGDATA="/home/bye/latihan-webdev/golang/.devbox/virtenv/postgresql/data"
+PGHOST="/home/bye/latihan-webdev/golang/.devbox/virtenv/postgresql"
+```
+
 ## Shell Init Hook
 The Shell Init Hook is a script that runs whenever the devbox environment is instantiated. It runs 
 on `devbox shell` and on `devbox run`.
@@ -34,6 +41,8 @@ export "GOROOT=$(go env GOROOT)"
 * [go@latest](https://www.nixhub.io/packages/go)
 * [gopls@latest](https://www.nixhub.io/packages/gopls)
 * [delve@latest](https://www.nixhub.io/packages/delve)
+* [postgresql@latest](https://www.nixhub.io/packages/postgresql)
+* [lazysql@latest](https://www.nixhub.io/packages/lazysql)
 
 ## Script Details
 
