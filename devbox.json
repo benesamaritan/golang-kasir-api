@@ -3,11 +3,7 @@
   "packages": [
     "go@latest",
     "gopls@latest",
-    "delve@latest",
-    "postgresql@latest",
-    "lazysql@latest",
-    "pgadmin4@latest",
-    "nginx@latest"
+    "delve@latest"
   ],
   "shell": {
     "init_hook": [
