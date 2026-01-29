@@ -109,13 +109,6 @@ func main() {
 	}
 }
 
-// Bagian Kategori
-type Kategori struct {
-	ID        int    `json:"id"`
-	Nama      string `json:"nama"`
-	Deskripsi string `json:"deskripsi"`
-}
-
 var kategori = []Kategori{
 	{
 		ID:        1,

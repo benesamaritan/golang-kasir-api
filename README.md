@@ -24,6 +24,13 @@ Scripts are custom commands that can be run using this project's environment. Th
 ## Environment
 
 ```sh
+NGINX_CONF="/home/bye/latihan-webdev/golang/devbox.d/nginx/nginx.conf"
+NGINX_CONFDIR="/home/bye/latihan-webdev/golang/devbox.d/nginx"
+NGINX_PATH_PREFIX="/home/bye/latihan-webdev/golang/.devbox/virtenv/nginx"
+NGINX_TMPDIR="/home/bye/latihan-webdev/golang/.devbox/virtenv/nginx/temp"
+NGINX_WEB_PORT="8081"
+NGINX_WEB_ROOT="../../../devbox.d/web"
+NGINX_WEB_SERVER_NAME="localhost"
 PGDATA="/home/bye/latihan-webdev/golang/.devbox/virtenv/postgresql/data"
 PGHOST="/home/bye/latihan-webdev/golang/.devbox/virtenv/postgresql"
 ```
@@ -43,6 +50,8 @@ export "GOROOT=$(go env GOROOT)"
 * [delve@latest](https://www.nixhub.io/packages/delve)
 * [postgresql@latest](https://www.nixhub.io/packages/postgresql)
 * [lazysql@latest](https://www.nixhub.io/packages/lazysql)
+* [pgadmin4@latest](https://www.nixhub.io/packages/pgadmin4)
+* [nginx@latest](https://www.nixhub.io/packages/nginx)
 
 ## Script Details
 
