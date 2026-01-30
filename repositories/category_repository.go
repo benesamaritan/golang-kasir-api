@@ -16,7 +16,7 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 
 // GetAll - ambil Kategori
 func (repo *CategoryRepository) GetAll() ([]models.Category, error) {
-	query := "SELECT * FROM categories"
+	query := "SELECT id, name, description FROM categories"
 	rows, err := repo.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -38,10 +38,25 @@ func (repo *CategoryRepository) GetAll() ([]models.Category, error) {
 
 // GetByID - ambil Kategori by ID
 func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
-	query := "SELECT id, name, description FROM categories WHERE id = $1"
+	query := `
+		SELECT
+			id,
+			name,
+			description,
+		    (SELECT COUNT(*) FROM products WHERE products.category_id = categories.id)
+		FROM
+			categories
+		WHERE
+			categories.id = $1
+		`
 
 	var p models.Category
-	err := repo.db.QueryRow(query, id).Scan(&p.ID, &p.Name, &p.Description)
+	err := repo.db.QueryRow(query, id).Scan(
+		&p.ID,
+		&p.Name,
+		&p.Description,
+		&p.ProductCount,
+	)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("Kategori tidak ditemukan")
 	}
@@ -53,7 +68,7 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
 }
 
 func (repo *CategoryRepository) Create(category *models.Category) error {
-	query := "INSERT INTO categories (name, description) VALUES ($1, $2, $3) RETURNING id"
+	query := "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING id"
 	err := repo.db.QueryRow(query, category.Name, category.Description).Scan(&category.ID)
 	return err
 }

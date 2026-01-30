@@ -1,0 +1,15 @@
+info:
+  name: Categories by ID
+  type: http
+  seq: 8
+
+http:
+  method: DELETE
+  url: http://localhost:8000/categories/2
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
