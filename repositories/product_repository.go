@@ -37,10 +37,34 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 
 // GetByID - ambil produk by ID
 func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
-	query := "SELECT products.id AS product_id, products.name, products.price, products.stock, products.category_id, categories.name AS category_name, categories.description AS category_description FROM products LEFT JOIN categories ON products.category_id = categories.id WHERE products.id = $1"
+	query := `
+		SELECT
+			products.id AS product_id,
+			products.name,
+			products.price,
+			products.stock,
+			categories.name,
+			categories.description 
+		FROM
+			products
+		LEFT JOIN
+			categories
+		ON
+			products.category_id = categories.id
+		WHERE
+			products.id = $1
+	`
 
 	var p models.Product
-	err := repo.db.QueryRow(query, id).Scan(&p.ID, &p.Name, &p.Price, &p.Stock, &p.Category, &p.CategoryName, &p.CategoryDescription)
+	err := repo.db.QueryRow(query, id).Scan(
+		&p.ID,
+		&p.Name,
+		&p.Price,
+		&p.Stock,
+		// &p.Category,
+		&p.CategoryName,
+		&p.CategoryDescription,
+	)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("produk tidak ditemukan")
 	}

@@ -43,7 +43,14 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
 			id,
 			name,
 			description,
-		    (SELECT COUNT(*) FROM products WHERE products.category_id = categories.id)
+		    (
+		    	SELECT
+		    		COUNT(*)
+		    	FROM
+		    		products
+		    	WHERE
+		    		products.category_id = categories.id
+		    )
 		FROM
 			categories
 		WHERE
