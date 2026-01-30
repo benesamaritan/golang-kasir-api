@@ -62,7 +62,7 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
 		&p.ID,
 		&p.Name,
 		&p.Description,
-		&p.ProductCount,
+		&p.Total,
 	)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("Kategori tidak ditemukan")

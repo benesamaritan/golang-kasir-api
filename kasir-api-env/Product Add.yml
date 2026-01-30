@@ -8,13 +8,13 @@ http:
   url: "{{url}}/api/product"
   body:
     type: json
-    data: |2-
-        {
-          "name": "",
-          "price": ,
-          "stock": ,
-          "category_id": 
-        }
+    data: |-
+      {
+        "name": "",
+        "price": ,
+        "stock": ,
+        "category_id": 
+      }
   auth: inherit
 
 settings:
