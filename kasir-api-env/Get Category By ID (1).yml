@@ -1,11 +1,11 @@
 info:
   name: Get Category By ID (1)
   type: http
-  seq: 5
+  seq: 6
 
 http:
   method: GET
-  url: http://localhost:8000/categories/3
+  url: "{{url}}/categories/3"
   body:
     type: json
     data: ""

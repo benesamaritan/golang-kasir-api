@@ -1,17 +1,17 @@
 info:
   name: Category Add
   type: http
-  seq: 7
+  seq: 8
 
 http:
   method: POST
-  url: http://localhost:8000/categories
+  url: "{{url}}/categories"
   body:
     type: json
     data: |-
       {
-        "nama": "Oleh-oleh",
-        "deskripsi": "Halal"
+        "name": "",
+        "description": ""
       }
   auth: inherit
 

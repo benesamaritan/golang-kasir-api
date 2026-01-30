@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8000/api/product
+  url: "{{url}}/api/product"
   body:
     type: json
     data: |2-

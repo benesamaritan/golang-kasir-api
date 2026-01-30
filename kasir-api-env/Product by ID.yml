@@ -1,11 +1,11 @@
 info:
-  name: Categories by ID
+  name: Product by ID
   type: http
-  seq: 8
+  seq: 5
 
 http:
   method: DELETE
-  url: http://localhost:8000/categories/2
+  url: "{{url}}/product/"
   auth: inherit
 
 settings:
