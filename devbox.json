@@ -3,7 +3,9 @@
   "packages": [
     "go@latest",
     "gopls@latest",
-    "delve@latest"
+    "delve@latest",
+    "gcc@latest",
+    "golangci-lint-langserver@latest"
   ],
   "shell": {
     "init_hook": [

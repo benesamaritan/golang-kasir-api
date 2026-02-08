@@ -26,7 +26,10 @@ func (repo *ProductRepository) GetAll(name string) ([]models.Product, error) {
 	`
 	var args []interface{}
 	if name != "" {
-		query += " WHERE name ILIKE $1"
+		query += `
+			WHERE name
+			ILIKE $1
+		`
 		args = append(args, "%"+name+"%")
 	}
 
@@ -39,7 +42,13 @@ func (repo *ProductRepository) GetAll(name string) ([]models.Product, error) {
 	products := make([]models.Product, 0)
 	for rows.Next() {
 		var p models.Product
-		err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock, &p.Category)
+		err := rows.Scan(
+			&p.ID,
+			&p.Name,
+			&p.Price,
+			&p.Stock,
+			&p.CategoryID,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -100,7 +109,7 @@ func (repo *ProductRepository) Create(product *models.Product) error {
 		product.Name,
 		product.Price,
 		product.Stock,
-		product.Category
+		product.CategoryID,
 	).Scan(&product.ID)
 	return err
 }
@@ -121,8 +130,8 @@ func (repo *ProductRepository) Update(product *models.Product) error {
 		product.Name,
 		product.Price,
 		product.Stock,
-		product.Category,
-		product.ID
+		product.CategoryID,
+		product.ID,
 	)
 	if err != nil {
 		return err

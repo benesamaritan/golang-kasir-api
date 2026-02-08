@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"kasir-api/database"
 	"kasir-api/handlers"
 	"kasir-api/repositories"
@@ -10,8 +11,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -36,7 +35,7 @@ func main() {
 	// Setup database
 	db, err := database.InitDB(config.DBConn)
 	if err != nil {
-		log.Fatal("Failed to initialize database:", err)
+		log.Fatal("Gagal menghubungi database:", err)
 	}
 	defer db.Close()
 
@@ -65,12 +64,12 @@ func main() {
 	http.HandleFunc("/api/product", productHandler.HandleProducts)
 	http.HandleFunc("/api/product/", productHandler.HandleProductByID)
 
+	// Transactions Route
+	http.HandleFunc("/api/checkout", transactionHandler.Checkout)
+
 	// Categories Route
 	http.HandleFunc("/categories", categoriesHandler.HandleCategories)
 	http.HandleFunc("/categories/", categoriesHandler.HandleCategoryByID)
-
-	// Transactions Route
-	http.HandleFunc("/api/checkout", transactionHandler.Checkout)
 
 	// Pesan Status Aplikasi
 	fmt.Println("Aplikasi Kasir Berhasil Jalan Pada Port:", config.Port)

@@ -16,8 +16,10 @@ type ProductHandler struct {
 func NewProductHandler(service *services.ProductService) *ProductHandler {
 	return &ProductHandler{service: service}
 }
+
 func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	products, err := h.service.GetAll()
+	name := r.URL.Query().Get("name")
+	products, err := h.service.GetAll(name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -43,7 +45,7 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var product models.Product
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "Permintaan Keliru", http.StatusBadRequest)
+		http.Error(w, "Request Keliru", http.StatusBadRequest)
 		return
 	}
 
@@ -68,7 +70,7 @@ func (h *ProductHandler) HandleProductByID(w http.ResponseWriter, r *http.Reques
 	case http.MethodDelete:
 		h.Delete(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Metode Keliru", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -79,13 +81,13 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid product ID"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "ID Produk Keliru"})
 		return
 	}
 
 	product, err := h.service.GetByID(id)
 	if err == nil {
-		product.Category = 0
+		product.CategoryID = 0
 	}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -100,14 +102,14 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/product/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		http.Error(w, "ID Produk Keliru", http.StatusBadRequest)
 		return
 	}
 
 	var product models.Product
 	err = json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "Body Keliru", http.StatusBadRequest)
 		return
 	}
 
@@ -127,7 +129,7 @@ func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/product/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		http.Error(w, "ID Produk Keliru", http.StatusBadRequest)
 		return
 	}
 
@@ -139,6 +141,6 @@ func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Product deleted successfully",
+		"message": "Produk berhasil dihapus",
 	})
 }
