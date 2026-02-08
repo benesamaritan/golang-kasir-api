@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"kasir-api/database"
 	"kasir-api/handlers"
@@ -41,32 +40,42 @@ func main() {
 	}
 	defer db.Close()
 
+	//Products
 	productRepo := repositories.NewProductRepository(db)
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
-	// Setup routes
-	http.HandleFunc("/api/produk", productHandler.HandleProducts)
-	http.HandleFunc("/api/produk/", productHandler.HandleProductByID)
+	//Categories
+	categoriesRepo := repositories.NewCategoryRepository(db)
+	categoriesService := services.NewCategoryService(categoriesRepo)
+	categoriesHandler := handlers.NewCategoryHandler(categoriesService)
 
+	//Transactions
 	transactionRepo := repositories.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
+	// Setup routes
+
+	// BaseURI dan Health
+	http.HandleFunc("/", handlers.WelcomeHandler())
+	http.HandleFunc("/health", handlers.HealthCheckHandler())
+
+	// Products Route
+	http.HandleFunc("/api/product", productHandler.HandleProducts)
+	http.HandleFunc("/api/product/", productHandler.HandleProductByID)
+
+	// Categories Route
+	http.HandleFunc("/categories", categoriesHandler.HandleCategories)
+	http.HandleFunc("/categories/", categoriesHandler.HandleCategoryByID)
+
+	// Transactions Route
 	http.HandleFunc("/api/checkout", transactionHandler.Checkout)
 
-	// localhost:8080/health
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "OK",
-			"message": "API Running",
-		})
-	})
-	fmt.Println("Server running di localhost:" + config.Port)
-
+	// Pesan Status Aplikasi
+	fmt.Println("Aplikasi Kasir Berhasil Jalan Pada Port:", config.Port)
 	err = http.ListenAndServe(":"+config.Port, nil)
 	if err != nil {
-		fmt.Println("gagal running server")
+		fmt.Println("Gagal Menjalankan API")
 	}
 }

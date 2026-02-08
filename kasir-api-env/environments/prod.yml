@@ -1,0 +1,4 @@
+name: prod
+variables:
+  - name: url
+    value: https://bene-samaritan-kasir.koyeb.app
