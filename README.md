@@ -34,6 +34,8 @@ export "GOROOT=$(go env GOROOT)"
 * [go@latest](https://www.nixhub.io/packages/go)
 * [gopls@latest](https://www.nixhub.io/packages/gopls)
 * [delve@latest](https://www.nixhub.io/packages/delve)
+* [gcc@latest](https://www.nixhub.io/packages/gcc)
+* [golangci-lint-langserver@latest](https://www.nixhub.io/packages/golangci-lint-langserver)
 
 ## Script Details
 
