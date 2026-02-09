@@ -4,8 +4,7 @@
     "go@latest",
     "gopls@latest",
     "delve@latest",
-    "gcc@latest",
-    "golangci-lint-langserver@latest"
+    "gcc@latest"
   ],
   "shell": {
     "init_hook": [
