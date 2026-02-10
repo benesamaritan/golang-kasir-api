@@ -9,7 +9,7 @@ import (
 
 func InitDB(connectionString string) (*sql.DB, error) {
 	// Open database
-	db, err := sql.Open("postgres", connectionString)
+	db, err := sql.Open("postgres", connectionString+"?TimeZone=Asia/Jakarta")
 	if err != nil {
 		return nil, err
 	}

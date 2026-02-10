@@ -19,9 +19,14 @@ func (s *ReportService) GetReport(start, end string) (*models.ReportResponse, er
 		return nil, err
 	}
 
+	bestSeller, err := s.repo.GetBestSeller(start, end)
+	if err != nil {
+		return nil, err
+	}
+
 	return &models.ReportResponse{
 		TotalRevenue:   revenue,
 		TotalTransaksi: transaksi,
-		ProdukTerlaris: models.BestSeller{},
+		ProdukTerlaris: *bestSeller,
 	}, nil
 }
