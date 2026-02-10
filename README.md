@@ -19,7 +19,9 @@ devbox run <script>
 ## Scripts
 Scripts are custom commands that can be run using this project's environment. This project has the following scripts:
 
+* [kasir](#devbox-run-kasir)
 * [test](#devbox-run-test)
+* [test-load](#devbox-run-test-load)
 
 ## Shell Init Hook
 The Shell Init Hook is a script that runs whenever the devbox environment is instantiated. It runs 
@@ -38,9 +40,23 @@ export "GOROOT=$(go env GOROOT)"
 
 ## Script Details
 
+### devbox run kasir
+```sh
+go build .
+nohup ./kasir-api &
+echo "Kasir application started in background on port 8000."
+```
+&ensp;
+
 ### devbox run test
 ```sh
 echo "Error: no test specified" && exit 1
+```
+&ensp;
+
+### devbox run test-load
+```sh
+k6 run test.js
 ```
 &ensp;
 

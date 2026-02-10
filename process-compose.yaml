@@ -1,6 +1,0 @@
-version: "0.5"
-processes:
-  kasir-api:
-    command: "go run main.go"
-    availability:
-      restart: "always"

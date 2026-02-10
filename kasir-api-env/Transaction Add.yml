@@ -1,0 +1,30 @@
+info:
+  name: Transaction Add
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{url}}/api/checkout"
+  body:
+    type: json
+    data: |-
+      {
+      "items": [
+        {
+          "product_id": 2,
+          "quantity": 2 
+        },
+        {
+          "product_id": 4,
+          "quantity": 3
+        }
+      ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,7 +1,7 @@
 info:
   name: Category Add
   type: http
-  seq: 8
+  seq: 9
 
 http:
   method: POST

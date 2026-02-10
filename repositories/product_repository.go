@@ -15,7 +15,7 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 }
 
 func (repo *ProductRepository) GetAll(name string) ([]models.Product, error) {
-	query := "SELECT id, name, price, stock FROM products"
+	query := "SELECT id, name, price, stock, category_id FROM products"
 
 	var args []interface{}
 	if name != "" {
@@ -56,6 +56,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 			products.name,
 			products.price,
 			products.stock,
+			categories.id,
 			categories.name,
 			categories.description 
 		FROM products

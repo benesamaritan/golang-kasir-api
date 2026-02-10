@@ -14,8 +14,15 @@
     "scripts": {
       "test": [
         "echo \"Error: no test specified\" && exit 1"
+      ],
+      "test-load": [
+        "k6 run test.js"
+      ],
+      "kasir": [
+        "go build .",
+        "nohup ./kasir-api &",
+        "echo \"Kasir application started in background on port 8000.\""
       ]
     }
-  },
-  "services": {}
+  }
 }

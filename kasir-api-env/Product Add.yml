@@ -1,11 +1,11 @@
 info:
   name: Product Add
   type: http
-  seq: 4
+  seq: 5
 
 http:
   method: POST
-  url: "{{url}}/api/product"
+  url: "{{url}}/api/produk"
   body:
     type: json
     data: |-
