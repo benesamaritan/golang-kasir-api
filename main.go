@@ -50,33 +50,44 @@ func main() {
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
-	// Setup routes
-	http.HandleFunc("/api/produk", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
+	// Dynamic Route Tracking
+	var registeredRoutes []handlers.RouteInfo
+	register := func(path string, handler http.HandlerFunc) {
+		registeredRoutes = append(registeredRoutes, handlers.RouteInfo{Path: path})
+		http.HandleFunc(path, handler)
+	}
 
-	http.HandleFunc("/api/produk/", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
+	// API Discovery
+	apiHandler := handlers.NewAPIHandler(&registeredRoutes)
+	register("/api", middlewares.CORS(middlewares.Logger(apiHandler.ListRoutes)))
+
+	// Setup routes
+	register("/api/produk", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
+
+	register("/api/produk/", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
 
 	transactionRepo := repositories.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
-	http.HandleFunc("/api/checkout", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(transactionHandler.Checkout))))
+	register("/api/checkout", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(transactionHandler.Checkout))))
 
 	// Categories Route
 	categoriesRepo := repositories.NewCategoryRepository(db)
 	categoriesService := services.NewCategoryService(categoriesRepo)
 	categoriesHandler := handlers.NewCategoryHandler(categoriesService)
-	http.HandleFunc("/categories", categoriesHandler.HandleCategories)
-	http.HandleFunc("/categories/{id}", categoriesHandler.HandleCategoryByID)
+	register("/categories", categoriesHandler.HandleCategories)
+	register("/categories/{id}", categoriesHandler.HandleCategoryByID)
 
 	// Report
 	reportRepo := repositories.NewReportRepository(db)
 	reportService := services.NewReportService(reportRepo)
 	reportHandler := handlers.NewReportHandler(reportService)
-	http.HandleFunc("/api/report", reportHandler.GetReport)
-	http.HandleFunc("/api/report/hari-ini", reportHandler.GetReportToday)
+	register("/api/report", reportHandler.GetReport)
+	register("/api/report/hari-ini", reportHandler.GetReportToday)
 
 	// localhost:8080/health
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	register("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":  "OK",
