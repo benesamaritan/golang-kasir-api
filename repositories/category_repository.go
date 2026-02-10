@@ -79,7 +79,7 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Categories, error) {
 
 // Update
 func (repo *CategoryRepository) Update(category *models.Categories) error {
-	query := "UPDATE categories SET name = $1, description = $2, WHERE id = $3"
+	query := "UPDATE categories SET name = $1, description = $2 WHERE id = $3"
 	result, err := repo.db.Exec(query, category.Name, category.Description, category.ID)
 
 	if err != nil {
@@ -91,7 +91,7 @@ func (repo *CategoryRepository) Update(category *models.Categories) error {
 		return err
 	}
 	if rows == 0 {
-		return errors.New("produk tidak ditemukan")
+		return errors.New("Kategori tidak ditemukan")
 	}
 	return nil
 }

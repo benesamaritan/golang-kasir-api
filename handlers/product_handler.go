@@ -99,10 +99,6 @@ func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	product, err := h.service.GetByID(id)
-	if err == nil {
-		product.CategoryID = 0
-	}
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
