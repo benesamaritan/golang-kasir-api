@@ -1,65 +1,70 @@
-# Panduan Implementasi Frontend: Go + HTMX + Templ + Tailwind
+# Comprehensive Frontend Blueprint: Go + Templ + HTMX + Tailwind
 
-Dokumen ini adalah panduan teknis bagi AI Agent untuk mengimplementasikan dashboard frontend sesuai dengan blok "Frontend Implementation" pada `TODO.md`.
-
-## 🛠 Tech Stack Utama
-- **Go 1.22+**: Core backend.
-- **HTMX**: Untuk interaksi AJAX tanpa JavaScript kompleks. [Ref: htmx.org](https://htmx.org/)
-- **Templ**: Type-safe HTML components dalam Go. [Ref: templ.guide](https://templ.guide/)
-- **Tailwind CSS**: Styling via CDN atau JIT build.
-- **Alpine.js**: (Opsional) Untuk interaksi UI sisi klien yang sangat ringan (seperti modal/dropdown).
+This document serves as an expert-level technical specification for an AI agent to build a polished, interactive dashboard on top of the existing Kasir API.
 
 ---
 
-## 🏗 Arsitektur Folder Baru
-```text
-.
-├── cmd/
-│   └── web/            # Entry point untuk web server jika ingin dipisah dari API
-├── internal/
-│   └── ui/             # Logika spesifik UI
-│       ├── components/ # Templ components (button, card, navbar)
-│       └── pages/      # Templ pages (dashboard, products, reports)
-├── static/             # File statis (css, js, images)
-└── main.go             # Registrasi route web handlers
-```
+## 1. Core Architectural Strategy
+The frontend will follow the **"Locality of Behavior" (LoB)** principle. We avoid heavy client-side frameworks and use Go to serve both HTML fragments and full pages.
+
+### Security & CORS
+- **Shared Middleware**: The existing `middlewares.CORS` must be applied to Web routes if the frontend is hosted on a different subdomain.
+- **CSRF Protection**: For production, implement `nosurf` or similar middleware.
+- **API Key Proxy**: The web server should securely inject the `API_KEY` from environment variables when making internal service calls, so the key is never exposed to the client browser.
 
 ---
 
-## 📝 Instruksi Implementasi Per Bagian
-
-### 1. Setup Infrastruktur (Templ & Static Files)
-- **Tooling**: Gunakan `templ generate` untuk compile file `.templ`.
-- **Static Handlers**:
-  ```go
-  fs := http.FileServer(http.Dir("./static"))
-  http.Handle("/static/", http.StripPrefix("/static/", fs))
-  ```
-- **Base Layout**: Buat `layout.templ` yang membungkus konten dengan Bootstrap/Tailwind dan script HTMX.
-
-### 2. Product Management (Dynamic UI)
-- **Live Search**: Gunakan atribut HTMX berikut pada input search:
-  ```html
-  <input type="search" name="search" 
-         hx-get="/dashboard/produk/list" 
-         hx-trigger="keyup delay:500ms, search" 
-         hx-target="#product-table-body" 
-         placeholder="Cari produk...">
-  ```
-- **Inline Delete**: Gunakan `hx-delete` dengan `hx-confirm` untuk proteksi. Kembalikan response kosong atau snippet kecil untuk menghapus baris dari DOM.
-
-### 3. Dashboard & Reporting
-- **Partial Updates**: Gunakan `hx-get` pada tab atau interval (`hx-trigger="every 30s"`) untuk memperbarui data laporan "Today's Sales" secara otomatis tanpa reload halaman.
+## 2. Environment Configuration
+The web dashboard must respect the following `.env` variables (managed via `viper`):
+- `WEB_PORT`: Port for the dashboard (default: `8081` if separate, or same as `PORT`).
+- `API_BASE_URL`: The URL where the backend API is reachable.
+- `ENVIRONMENT`: `development` vs `production` (to toggle live-reload/minification).
 
 ---
 
-## 🚦 Standar Koding untuk Agent
-1. **Component-Based**: Setiap bagian UI (misal: satu baris tabel produk) harus menjadi fungsi `templ` sendiri agar bisa dirender ulang secara parsial oleh HTMX.
-2. **RESTful Integration**: Web handlers harus memanggil `Service` yang sama dengan API handlers untuk menjaga konsistensi data.
-3. **Graceful Degradation**: Pastikan link tetap memiliki atribut `href` dasar meskipun menggunakan HTMX.
-4. **Loading States**: Selalu tambahkan indikator loading menggunakan class `htmx-indicator`.
+## 3. Dynamic Routing Map (Web Handlers)
 
-## 🔗 Referensi Penting
-- **Templ Documentation**: [https://templ.guide](https://templ.guide) - Gunakan komponen `.templ` untuk type-safety.
-- **HTMX Examples**: [https://htmx.org/examples/](https://htmx.org/examples/) - Gunakan pola "Active Search" dan "Infinite Scroll" jika perlu.
-- **Go standard library `http.ServeMux`**: Gunakan fitur `r.PathValue("id")` untuk routing bersih.
+The following routes must be implemented in `main.go` or a dedicated `handlers/web_handler.go`:
+
+| Path | Method | Purpose | HTMX Interaction |
+| :--- | :--- | :--- | :--- |
+| `/` | GET | Main Dashboard Shell | Full page load |
+| `/dashboard/stats` | GET | Summary Cards (Revenue, Trx) | `hx-get` on timer (30s) |
+| `/produk` | GET | Product Management Page | Full page load |
+| `/produk/table` | GET | Product Table Rows | `hx-get` with search params |
+| `/produk/add` | GET/POST | Add Product Form/Modal | `hx-swap="beforeend"` to table |
+| `/checkout` | GET | POS / Cashier Interface | Full page load |
+| `/checkout/cart` | POST | Add item to virtual cart | `hx-post` partial update |
+
+---
+
+## 4. Technical Implementation Detail
+
+### Templ Component Structure (`internal/ui/`)
+1. **`layout.templ`**:
+    - Includes Tailwind CDN or link to `static/css/main.css`.
+    - Includes HTMX: `<script src="https://unpkg.com/htmx.org@1.9.10"></script>`.
+    - Setup `htmx-indicator` for global loading feedback.
+2. **`product_row.templ`**:
+    - A single `<tr>` with `id="product-{id}"`.
+    - Contains `hx-delete` for soft/hard delete.
+3. **`cart_view.templ`**:
+    - Calculates totals on the fly using Go logic before sending HTML to the client.
+
+### HTMX Patterns to Use
+- **Active Search**: Use `hx-trigger="keyup delay:500ms, changed"` on the search input to filter products.
+- **OutOfBand Updates (OOB)**: Use `hx-swap-oob="true"` to update the total revenue card while processing a transaction.
+- **Validation**: Use `hx-post` on input blur to validate stock availability before the user hits "Checkout".
+
+---
+
+## 5. Build Pipeline for AI Agent
+To generate the UI, the agent must:
+1.  **Install Templ**: `go install github.com/a-h/templ/cmd/templ@latest`.
+2.  **Generate Go code from templates**: Run `templ generate`.
+3.  **Static Embedding**: Use `//go:embed static/*` to bundle assets into the single binary for easy deployment to Zeabur/Docker.
+
+## 🔗 References
+- **Templ Guide**: [https://templ.guide](https://templ.guide)
+- **HTMX + Go Patterns**: [https://htmx.org/essays/template-fragments/](https://htmx.org/essays/template-fragments/)
+- **Alpine.js for Modals**: [https://alpinejs.dev/](https://alpinejs.dev/)
