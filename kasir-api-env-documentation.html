@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kasir-api-env - API Documentation</title>
+    <style>
+        body { margin: 0; padding: 0; }
+        #opencollection-container { width: 100vw; height: 100vh; }
+    </style>
+    <link rel="stylesheet" href="https://cdn.opencollection.com/docs.css">
+    <script src="https://cdn.opencollection.com/docs.js"></script>
+</head>
+<body>
+    <div id="opencollection-container"></div>
+    <script>
+        const collectionData = "opencollection: 1.0.0\ninfo:\n  name: kasir-api-env\nconfig:\n  proxy:\n    inherit: true\n    config:\n      protocol: http\n      hostname: ''\n      port: ''\n      auth:\n        username: ''\n        password: ''\n      bypassProxy: ''\n  environments:\n    - name: local\n      variables:\n        - name: url\n          value: http://localhost:8000\n    - name: prod\n      variables:\n        - name: url\n          value: https://bene-samaritan-kasir.koyeb.app\nitems:\n  - info:\n      name: Category Add\n      type: http\n      seq: 8\n    http:\n      method: POST\n      url: '{{url}}/categories'\n      body:\n        type: json\n        data: |-\n          {\n            \"name\": \"\",\n            \"description\": \"\"\n          }\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Category by ID\n      type: http\n      seq: 9\n    http:\n      method: DELETE\n      url: '{{url}}/categories/'\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Check Health\n      type: http\n      seq: 1\n    http:\n      method: GET\n      url: '{{url}}/health'\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Get All Categories\n      type: http\n      seq: 6\n    http:\n      method: GET\n      url: '{{url}}/categories'\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Get All Products\n      type: http\n      seq: 2\n    http:\n      method: GET\n      url: '{{url}}/api/product'\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Get Category By ID (1)\n      type: http\n      seq: 7\n    http:\n      method: GET\n      url: '{{url}}/categories/3'\n      body:\n        type: json\n        data: ''\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Get Products By ID (1)\n      type: http\n      seq: 3\n    http:\n      method: GET\n      url: '{{url}}/api/product/2'\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Product Add\n      type: http\n      seq: 4\n    http:\n      method: POST\n      url: '{{url}}/api/product'\n      body:\n        type: json\n        data: |-\n          {\n            \"name\": \"\",\n            \"price\": ,\n            \"stock\": ,\n            \"category_id\": \n          }\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\n  - info:\n      name: Product by ID\n      type: http\n      seq: 5\n    http:\n      method: DELETE\n      url: '{{url}}/product/'\n      auth: inherit\n    settings:\n      encodeUrl: true\n      timeout: 0\n      followRedirects: true\n      maxRedirects: 5\nbundled: true\nextensions:\n  bruno:\n    ignore:\n      - node_modules\n      - .git\n    exportedAt: '2026-02-10T15:20:13.943Z'\n    exportedUsing: Bruno/3.0.2\n";
+        new window.OpenCollection({
+            target: document.getElementById('opencollection-container'),
+            opencollection: collectionData,
+            theme: 'light'
+        });
+    </script>
+</body>
+</html>
