@@ -25,7 +25,7 @@ func (h *ProductHandler) HandleProducts(w http.ResponseWriter, r *http.Request) 
 	case http.MethodPost:
 		h.Create(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Keliru", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -45,7 +45,7 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var product models.Product
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "Permintaan Keliru", http.StatusBadRequest)
 		return
 	}
 
@@ -78,12 +78,19 @@ func (h *ProductHandler) HandleProductByID(w http.ResponseWriter, r *http.Reques
 func (h *ProductHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/api/produk/")
 	id, err := strconv.Atoi(idStr)
+
 	if err != nil {
-		http.Error(w, "Invalid product ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid product ID"})
 		return
 	}
 
 	product, err := h.service.GetByID(id)
+	if err == nil {
+		product.CategoryID = 0
+	}
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

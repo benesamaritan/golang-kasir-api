@@ -1,0 +1,24 @@
+info:
+  name: Product Add
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{url}}/api/product"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "",
+        "price": ,
+        "stock": ,
+        "category_id": 
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

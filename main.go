@@ -1,8 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	// "github.com/gorilla/mux"
+	"encoding/json"
+	"github.com/spf13/viper"
 	"kasir-api/database"
 	"kasir-api/handlers"
 	"kasir-api/middlewares"
@@ -12,8 +14,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -60,6 +60,20 @@ func main() {
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
 	http.HandleFunc("/api/checkout", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(transactionHandler.Checkout))))
+
+	// Categories Route
+	categoriesRepo := repositories.NewCategoryRepository(db)
+	categoriesService := services.NewCategoryService(categoriesRepo)
+	categoriesHandler := handlers.NewCategoryHandler(categoriesService)
+	http.HandleFunc("/categories", categoriesHandler.HandleCategories)
+	http.HandleFunc("/categories/{id}", categoriesHandler.HandleCategoryByID)
+
+	// Report
+	reportRepo := repositories.NewReportRepository(db)
+	reportService := services.NewReportService(reportRepo)
+	reportHandler := handlers.NewReportHandler(reportService)
+	http.HandleFunc("/api/report", reportHandler.GetReport)
+	http.HandleFunc("/api/report/hari-ini", reportHandler.GetReportToday)
 
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

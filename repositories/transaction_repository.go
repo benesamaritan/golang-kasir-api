@@ -1,9 +1,11 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"kasir-api/models"
+	"time"
 )
 
 type TransactionRepository struct {
@@ -15,10 +17,6 @@ func NewTransactionRepository(db *sql.DB) *TransactionRepository {
 }
 
 func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem) (*models.Transaction, error) {
-	var (
-		res *models.Transaction
-	)
-
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return nil, err
@@ -32,9 +30,10 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 	// loop setiap item
 	for _, item := range items {
 		var productName string
-		var productID, price, stock int
+		var price, stock int
 		// get product dapet pricing
-		err := tx.QueryRow("SELECT id, name, price, stock FROM products WHERE id=$1", item.ProductID).Scan(&productID, &productName, &price, &stock)
+		err := tx.QueryRow("SELECT name, price, stock FROM products WHERE id=$1 FOR UPDATE", item.ProductID).Scan(&productName, &price, &stock)
+
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("product id %d not found", item.ProductID)
 		}
@@ -49,45 +48,65 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 		totalAmount += subtotal
 
 		// kurangi jumlah stok
-		_, err = tx.Exec("UPDATE products SET stock = stock - $1 WHERE id = $2", item.Quantity, productID)
+		res, err := tx.Exec("UPDATE products SET stock = stock - $1 WHERE id = $2", item.Quantity, item.ProductID)
+
+		if stock < item.Quantity {
+			return nil, fmt.Errorf(
+				"stock product %s is not enough (available %d)",
+				productName,
+				stock,
+			)
+		}
+
 		if err != nil {
 			return nil, err
 		}
 
 		// item nya dimasukkin ke transactionDetails
 		details = append(details, models.TransactionDetail{
-			ProductID:   productID,
+			ProductID:   item.ProductID,
 			ProductName: productName,
 			Quantity:    item.Quantity,
 			Subtotal:    subtotal,
 		})
+		rows, _ := res.RowsAffected()
+		if rows == 0 {
+			return nil, fmt.Errorf("failed to update stock product id %d", item.ProductID)
+		}
 	}
 
 	// insert transaction
 	var transactionID int
-	err = tx.QueryRow("INSERT INTO transactions (total_amount) VALUES ($1) RETURNING ID", totalAmount).Scan(&transactionID)
+	var createdAt time.Time
+	err = tx.QueryRow("INSERT INTO transactions (total_amount, created_at) VALUES ($1, NOW()) RETURNING ID, created_at", totalAmount).Scan(&transactionID, &createdAt)
 	if err != nil {
 		return nil, err
-	}
-
-	// insert transaction details
-	for i, detail := range details {
-		details[i].TransactionID = transactionID
-		_, err := tx.Exec("INSERT INTO transaction_details (transaction_id, product_id, quantity, subtotal) VALUES ($1, $2,$3,$4)", transactionID, detail.ProductID, detail.Quantity, detail.Subtotal)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
-	res = &models.Transaction{
+	return &models.Transaction{
 		ID:          transactionID,
 		TotalAmount: totalAmount,
 		Details:     details,
-	}
+	}, nil
+}
 
-	return res, nil
+// insertTransactionDetails
+func (repo *TransactionRepository) insertTransactionDetails(ctx context.Context, tx *sql.Tx, transactionID int, details []models.TransactionDetail) error {
+	stmt, err := tx.PrepareContext(ctx, "INSERT INTO transaction_details (transaction_id, product_id, quantity, subtotal) VALUES ($1, $2, $3, $4)")
+	if err != nil {
+		return fmt.Errorf("failed to prepare transaction detail statement: %w", err)
+	}
+	defer stmt.Close()
+
+	for _, detail := range details {
+		_, err = stmt.ExecContext(ctx, transactionID, detail.ProductID, detail.Quantity, detail.Subtotal)
+		if err != nil {
+			return fmt.Errorf("failed to insert transaction detail: %w", err)
+		}
+	}
+	return nil
 }
