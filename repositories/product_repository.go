@@ -14,13 +14,25 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
-func (repo *ProductRepository) GetAll(name string) ([]models.Product, error) {
-	query := "SELECT id, name, price, stock, category_id FROM products"
-
+func (repo *ProductRepository) GetAll(name string, active *bool) ([]models.Product, error) {
+	query := "SELECT id, name, price, stock, category_id, active FROM products"
+	whereClauses := []string{}
 	var args []interface{}
+	argCounter := 1
+
 	if name != "" {
-		query += " WHERE name ILIKE $1"
+		whereClauses = append(whereClauses, fmt.Sprintf("name ILIKE $%d", argCounter))
 		args = append(args, "%"+name+"%")
+		argCounter++
+	}
+	if active != nil {
+		whereClauses = append(whereClauses, fmt.Sprintf("active = $%d", argCounter))
+		args = append(args, *active)
+		argCounter++
+	}
+
+	if len(whereClauses) > 0 {
+		query += " WHERE " + strings.Join(whereClauses, " AND ")
 	}
 
 	rows, err := repo.db.Query(query, args...)
@@ -32,7 +44,7 @@ func (repo *ProductRepository) GetAll(name string) ([]models.Product, error) {
 	products := make([]models.Product, 0)
 	for rows.Next() {
 		var p models.Product
-		err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock, &p.CategoryID)
+		err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock, &p.CategoryID, &p.Active)
 		if err != nil {
 			return nil, err
 		}

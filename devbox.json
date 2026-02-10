@@ -4,7 +4,8 @@
     "go@latest",
     "gopls@latest",
     "delve@latest",
-    "k6@latest"
+    "k6@latest",
+    "process-compose@latest"
   ],
   "shell": {
     "init_hook": [
@@ -18,10 +19,11 @@
       "test-load": [
         "k6 run test.js"
       ],
-      "kasir": [
-        "go build .",
-        "nohup ./kasir-api &",
-        "echo \"Kasir application started in background on port 8000.\""
+      "kasir-up": [
+        "process-compose up"
+      ],
+      "kasir-down": [
+        "process-compose down"
       ]
     }
   }

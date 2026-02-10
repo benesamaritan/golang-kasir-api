@@ -8,4 +8,5 @@ type Product struct {
 	CategoryID          int    `json:"category_id,omitempty"`
 	CategoryName        string `json:"category_name,omitempty"`
 	CategoryDescription string `json:"category_description,omitempty"`
+	Active              bool   `json:"active"`
 }

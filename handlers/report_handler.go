@@ -21,7 +21,7 @@ func (h *ReportHandler) GetReportToday(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	today := time.Now().Format("DD-MM-YYYY")
+	today := time.Now().Format("2006-01-02")
 
 	report, err := h.service.GetReport(today, today)
 	if err != nil {

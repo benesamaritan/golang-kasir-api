@@ -31,7 +31,19 @@ func (h *ProductHandler) HandleProducts(w http.ResponseWriter, r *http.Request) 
 
 func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
-	products, err := h.service.GetAll(name)
+	activeStr := r.URL.Query().Get("active")
+
+	var active *bool
+	if activeStr != "" {
+		parsedActive, err := strconv.ParseBool(activeStr)
+		if err != nil {
+			http.Error(w, "Parameter 'active' harus berupa boolean (true/false)", http.StatusBadRequest)
+			return
+		}
+		active = &parsedActive
+	}
+
+	products, err := h.service.GetAll(name, active)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -59,6 +59,10 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 		return nil, err
 	}
 
+	for i := range details {
+		details[i].TransactionID = transactionID
+	}
+
 	return &models.Transaction{
 		ID:          transactionID,
 		TotalAmount: totalAmount,
