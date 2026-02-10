@@ -1,15 +1,17 @@
 FROM jetpackio/devbox:latest
 
-# Installing your devbox project
-WORKDIR /code
-USER root:root
-RUN mkdir -p /code && chown ${DEVBOX_USER}:${DEVBOX_USER} /code
-USER ${DEVBOX_USER}:${DEVBOX_USER}
-COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} devbox.json devbox.json
-COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} devbox.lock devbox.lock
+# WORKDIR sets the destination folder INSIDE the container.
+# Your code from the project root will be copied here.
+WORKDIR /app
 
+# Copy devbox configuration first for better caching
+COPY devbox.json devbox.lock ./
 
+# Install the environment
+RUN devbox run -- echo "Environment initialized"
 
-RUN devbox run -- echo "Installed Packages." && nix-store --gc && nix-store --optimise
+# Copy all files from your project root into /app inside the container
+COPY . .
 
-CMD ["devbox", "shell"]
+# Start the application
+CMD ["devbox", "run", "kasir-up"]
