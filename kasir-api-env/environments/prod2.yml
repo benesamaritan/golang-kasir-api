@@ -1,0 +1,4 @@
+name: prod2
+variables:
+  - name: url
+    value: https://bene-samaritan-kasir.zeabur.app

@@ -21,7 +21,7 @@ func InitDB(connectionString string) (*sql.DB, error) {
 	}
 
 	// Set connection pool settings (optional tapi recommended)
-	// Opsi A
+	// Opsi A - Need to uncomment "time" module
 	// db.SetConnMaxLifetime(30 * time.Minute)
 	// db.SetConnMaxIdleTime(5 * time.Minute)
 	// db.SetMaxOpenConns(25)

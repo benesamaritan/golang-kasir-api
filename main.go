@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-	// "github.com/gorilla/mux"
 	"encoding/json"
+	"fmt"
 	"github.com/spf13/viper"
 	"kasir-api/database"
 	"kasir-api/handlers"
@@ -60,10 +59,10 @@ func main() {
 	// API Discovery
 	apiHandler := handlers.NewAPIHandler(&registeredRoutes)
 	register("/api", middlewares.CORS(middlewares.Logger(apiHandler.ListRoutes)))
+	http.Handle("/api/", http.RedirectHandler("/api", http.StatusMovedPermanently))
 
 	// Setup routes
 	register("/api/produk", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
-
 	register("/api/produk/", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
 
 	transactionRepo := repositories.NewTransactionRepository(db)
@@ -98,6 +97,6 @@ func main() {
 
 	err = http.ListenAndServe(":"+config.Port, nil)
 	if err != nil {
-		fmt.Println("gagal running server:", err)
+		fmt.Println("Gagal running server:", err)
 	}
 }
