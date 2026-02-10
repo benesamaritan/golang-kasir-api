@@ -84,6 +84,7 @@ func main() {
 	reportHandler := handlers.NewReportHandler(reportService)
 	register("/api/report", reportHandler.GetReport)
 	register("/api/report/hari-ini", reportHandler.GetReportToday)
+	register("/api/report/range", reportHandler.GetReportByRange)
 
 	// localhost:8080/health
 	register("/health", func(w http.ResponseWriter, r *http.Request) {

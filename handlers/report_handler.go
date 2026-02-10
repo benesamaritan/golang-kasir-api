@@ -47,6 +47,24 @@ func (h *ReportHandler) GetReport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(report)
+}
+
+func (h *ReportHandler) GetReportByRange(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	startDate := r.URL.Query().Get("from")
+	endDate := r.URL.Query().Get("to")
+
+	if startDate == "" || endDate == "" {
+		http.Error(w, "parameter 'from' dan 'to' diperlukan (format: YYYY-MM-DD)", http.StatusBadRequest)
+		return
+	}
+
 	report, err := h.service.GetReport(startDate, endDate)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
