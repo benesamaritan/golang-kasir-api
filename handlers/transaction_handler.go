@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"kasir-api-golang-2/models"
-	"kasir-api-golang-2/services"
+	"kasir-api/models"
+	"kasir-api/services"
 	"net/http"
 )
-
 
 type TransactionHandler struct {
 	service *services.TransactionService
@@ -30,7 +29,7 @@ func (h *TransactionHandler) Checkout(w http.ResponseWriter, r *http.Request) {
 	var req models.CheckoutRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w,  err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	transaction, err := h.service.Checkout(req.Items)

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"kasir-api-golang-2/services"
+	"kasir-api/services"
 	"net/http"
 	"time"
 )

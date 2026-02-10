@@ -1,4 +1,4 @@
-module kasir-api-golang-2
+module kasir-api
 
 go 1.24.0
 

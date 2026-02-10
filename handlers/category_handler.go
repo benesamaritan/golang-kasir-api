@@ -2,12 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"kasir-api-golang-2/models"
-	"kasir-api-golang-2/services"
+	"kasir-api/models"
+	"kasir-api/services"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
+	"strings"
 )
 
 type CategoryHandler struct {
@@ -18,7 +17,27 @@ func NewCategoryHandler(service *services.CategoryService) *CategoryHandler {
 	return &CategoryHandler{service: service}
 }
 
-// HandlerProduct-GET /api/produk
+// Create
+func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var product models.Categories
+	err := json.NewDecoder(r.Body).Decode(&product)
+	if err != nil {
+		http.Error(w, "Isi Body Request Keliru, silahkan cek ulang", http.StatusBadRequest)
+		return
+	}
+
+	err = h.service.Create(&product)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(product)
+}
+
+// HandleCategories - GET /categories
 func (h *CategoryHandler) HandleCategories(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -26,41 +45,22 @@ func (h *CategoryHandler) HandleCategories(w http.ResponseWriter, r *http.Reques
 	case http.MethodPost:
 		h.Create(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Gagal", http.StatusMethodNotAllowed)
 	}
 }
-
 
 func (h *CategoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	categories, err := h.service.GetAll()
+	products, err := h.service.GetAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(categories)
+	json.NewEncoder(w).Encode(products)
 }
 
-func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var category models.Categories
-	err := json.NewDecoder(r.Body).Decode(&category)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = h.service.Create(&category)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(category)
-}
-
+// HandleCategoryByID - GET/PUT/DELETE /categories/{id}
 func (h *CategoryHandler) HandleCategoryByID(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -70,77 +70,73 @@ func (h *CategoryHandler) HandleCategoryByID(w http.ResponseWriter, r *http.Requ
 	case http.MethodDelete:
 		h.Delete(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-
+		http.Error(w, "Gagal", http.StatusMethodNotAllowed)
 	}
 }
 
+// GetByID - GET /categories/{id}
 func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
+	idStr := strings.TrimPrefix(r.URL.Path, "/categories/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid Category ID", http.StatusBadRequest)
+		http.Error(w, "ID Keliru", http.StatusBadRequest)
 		return
 	}
 
-	category, err := h.service.GetByID(id)
+	product, err := h.service.GetByID(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(category)
+	json.NewEncoder(w).Encode(product)
 }
 
+// UPDATE /categories/{id}
 func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
-
+	idStr := strings.TrimPrefix(r.URL.Path, "/categories/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid Categories ID", http.StatusBadRequest)
+		http.Error(w, "ID Kategori Keliru", http.StatusBadRequest)
 		return
 	}
 
-	var category models.Categories
-	err = json.NewDecoder(r.Body).Decode(&category)
+	var product models.Categories
+	err = json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "Invalid Category ID", http.StatusBadRequest)
+		http.Error(w, "Isi Body Request Keliru", http.StatusBadRequest)
 		return
 	}
 
-	category.ID = id
-	err = h.service.Update(&category)
+	product.ID = id
+	err = h.service.Update(&product)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(category)
+	json.NewEncoder(w).Encode(product)
 }
 
+// Delete - DELETE /categories/{id}
 func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
-
+	idStr := strings.TrimPrefix(r.URL.Path, "/categories/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid Category ID", http.StatusBadRequest)
+		http.Error(w, "ID Kategori Keliru", http.StatusBadRequest)
 		return
 	}
 
 	err = h.service.Delete(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Category deleted successfully",
+		"message": "Kategori berhasil dihapus",
 	})
 }

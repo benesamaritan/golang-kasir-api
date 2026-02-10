@@ -2,15 +2,15 @@ package services
 
 import (
 	"errors"
-	"kasir-api-golang-2/models"
-	"kasir-api-golang-2/repositories"
+	"kasir-api/models"
+	"kasir-api/repositories"
 )
 
 type TransactionService struct {
 	repo *repositories.TransactionRepository
 }
 
-func NewTransactionService(repo *repositories.TransactionRepository) *TransactionService{
+func NewTransactionService(repo *repositories.TransactionRepository) *TransactionService {
 	return &TransactionService{repo: repo}
 }
 

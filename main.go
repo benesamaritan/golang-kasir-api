@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"kasir-api/database"
 	"kasir-api/handlers"
@@ -11,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"github.com/gorilla/mux"
 )
 
 type Config struct {
@@ -52,14 +52,17 @@ func main() {
 		DBConn: viper.GetString("DB_CONN"),
 	}
 
+	port := viper.GetString("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	// Setup database
 	db, err := database.InitDB(config.DBConn)
 	if err != nil {
 		log.Fatal("Gagal Terhubung Dengan DB:", err)
 	}
 	defer db.Close()
-
-	r := mux.newRouter()
 
 	// BaseURI dan Health
 	http.HandleFunc("/", handlers.WelcomeHandler())
@@ -70,19 +73,20 @@ func main() {
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 	http.HandleFunc("/api/product", productHandler.HandleProducts)
-	http.HandleFunc("/api/product/", productHandler.HandleProductByID)
+	http.HandleFunc("/api/product/{id}", productHandler.HandleProductByID)
 
 	// Categories Route
 	categoriesRepo := repositories.NewCategoryRepository(db)
 	categoriesService := services.NewCategoryService(categoriesRepo)
 	categoriesHandler := handlers.NewCategoryHandler(categoriesService)
 	http.HandleFunc("/categories", categoriesHandler.HandleCategories)
-	http.HandleFunc("/categories/", categoriesHandler.HandleCategoryByID)
+	http.HandleFunc("/categories/{id}", categoriesHandler.HandleCategoryByID)
 
 	// Transaction
 	transactionRepo := repositories.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
+	r := mux.NewRouter()
 	r.HandleFunc("/api/checkout", transactionHandler.HandleCheckout).Methods("POST")
 
 	// Report

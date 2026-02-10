@@ -1,8 +1,8 @@
 package services
 
 import (
-	"kasir-api-golang-2/models"
-	"kasir-api-golang-2/repositories"
+	"kasir-api/models"
+	"kasir-api/repositories"
 )
 
 type ReportService struct {

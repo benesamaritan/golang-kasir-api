@@ -3,7 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
-	"kasir-api-golang-2/models"
+	"kasir-api/models"
 	"time"
 )
 
