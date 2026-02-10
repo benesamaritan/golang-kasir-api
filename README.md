@@ -19,7 +19,8 @@ devbox run <script>
 ## Scripts
 Scripts are custom commands that can be run using this project's environment. This project has the following scripts:
 
-* [kasir](#devbox-run-kasir)
+* [kasir-down](#devbox-run-kasir-down)
+* [kasir-up](#devbox-run-kasir-up)
 * [test](#devbox-run-test)
 * [test-load](#devbox-run-test-load)
 
@@ -37,14 +38,19 @@ export "GOROOT=$(go env GOROOT)"
 * [gopls@latest](https://www.nixhub.io/packages/gopls)
 * [delve@latest](https://www.nixhub.io/packages/delve)
 * [k6@latest](https://www.nixhub.io/packages/k6)
+* [process-compose@latest](https://www.nixhub.io/packages/process-compose)
 
 ## Script Details
 
-### devbox run kasir
+### devbox run kasir-down
 ```sh
-go build .
-nohup ./kasir-api &
-echo "Kasir application started in background on port 8000."
+process-compose down
+```
+&ensp;
+
+### devbox run kasir-up
+```sh
+process-compose up
 ```
 &ensp;
 
