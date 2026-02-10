@@ -14,8 +14,9 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 	return &CategoryRepository{db: db}
 }
 
+<<<<<<< HEAD
 // GetAll - ambil Kategori
-func (repo *CategoryRepository) GetAll() ([]models.Category, error) {
+func (repo *CategoryRepository) GetAll() ([]models.Categories, error) {
 	query := "SELECT id, name, description FROM categories"
 	rows, err := repo.db.Query(query)
 	if err != nil {
@@ -23,21 +24,21 @@ func (repo *CategoryRepository) GetAll() ([]models.Category, error) {
 	}
 	defer rows.Close()
 
-	categories := make([]models.Category, 0)
+	categories := make([]models.Categories, 0)
 	for rows.Next() {
-		var p models.Category
-		err := rows.Scan(&p.ID, &p.Name, &p.Description)
+		var c models.Categories
+		err := rows.Scan(&c.ID, &c.Name, &c.Description)
 		if err != nil {
 			return nil, err
 		}
-		categories = append(categories, p)
+		categories = append(categories, c)
 	}
-
 	return categories, nil
 }
 
+<<<<<<< HEAD
 // GetByID - ambil Kategori by ID
-func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
+func (repo *CategoryRepository) GetByID(id int) (*models.Categories, error) {
 	query := `
 		SELECT
 			id,
@@ -57,16 +58,18 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
 			categories.id = $1
 		`
 
-	var p models.Category
+	var p models.Categories
 	err := repo.db.QueryRow(query, id).Scan(
 		&p.ID,
 		&p.Name,
 		&p.Description,
 		&p.Total,
 	)
+
 	if err == sql.ErrNoRows {
 		return nil, errors.New("Kategori tidak ditemukan")
 	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -74,15 +77,10 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Category, error) {
 	return &p, nil
 }
 
-func (repo *CategoryRepository) Create(category *models.Category) error {
-	query := "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING id"
-	err := repo.db.QueryRow(query, category.Name, category.Description).Scan(&category.ID)
-	return err
-}
-
-func (repo *CategoryRepository) Update(category *models.Category) error {
+func (repo *CategoryRepository) Update(category *models.Categories) error {
 	query := "UPDATE categories SET name = $1, description = $2, WHERE id = $3"
 	result, err := repo.db.Exec(query, category.Name, category.Description, category.ID)
+
 	if err != nil {
 		return err
 	}
@@ -91,12 +89,6 @@ func (repo *CategoryRepository) Update(category *models.Category) error {
 	if err != nil {
 		return err
 	}
-
-	if rows == 0 {
-		return errors.New("Kategori tidak ditemukan")
-	}
-
-	return nil
 }
 
 func (repo *CategoryRepository) Delete(id int) error {
@@ -105,6 +97,7 @@ func (repo *CategoryRepository) Delete(id int) error {
 	if err != nil {
 		return err
 	}
+
 	rows, err := result.RowsAffected()
 	if err != nil {
 		return err
@@ -113,6 +106,5 @@ func (repo *CategoryRepository) Delete(id int) error {
 	if rows == 0 {
 		return errors.New("Kategori tidak ditemukan")
 	}
-
 	return err
 }

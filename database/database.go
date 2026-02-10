@@ -15,7 +15,7 @@ func InitDB(connectionString string) (*sql.DB, error) {
 	}
 
 	// Test connection
-	err = db.Ping()
+	err =db.Ping()
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,9 @@
-module kasir-api
+module kasir-api-golang-2
 
 go 1.24.0
 
 require (
+	github.com/gorilla/mux v1.8.1
 	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.21.0
 )
