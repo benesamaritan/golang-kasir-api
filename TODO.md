@@ -2,12 +2,32 @@
 
 This document outlines current issues, security considerations, and potential enhancements for the Kasir API.
 
+## 🚀 Frontend Implementation (HTMX + Go Templates)
+- [ ] **Infrastructure Setup:**
+    - [ ] Create `templates/` directory for HTML files.
+    - [ ] Setup `static/` directory for CSS/JS assets (optional, can use CDNs).
+    - [ ] Configure `main.go` to serve static files and parse templates.
+- [ ] **Core Layout:**
+    - [ ] Create `layout.html` with Bootstrap 5 and HTMX script.
+    - [ ] Implement a responsive Navbar.
+- [ ] **Product Management Dashboard:**
+    - [ ] Create `/dashboard/produk` route.
+    - [ ] Implement dynamic product list with "Delete" and "Toggle Active" buttons using HTMX (`hx-delete`, `hx-patch`).
+    - [ ] Add "Search" functionality with live filtering (`hx-trigger="keyup delay:500ms"`).
+    - [ ] Create a Modal or side-panel for "Add Product" using HTMX.
+- [ ] **Category Management:**
+    - [ ] Create `/dashboard/categories` route.
+    - [ ] Implement category list and creation form.
+- [ ] **Cashier/Checkout Interface:**
+    - [ ] Build a simple "Point of Sale" UI where products can be added to a virtual cart.
+    - [ ] Implement "Process Checkout" button that calls `/api/checkout` via HTMX and displays a success/receipt message.
+- [ ] **Reporting Dashboard:**
+    - [ ] Visual dashboard for "Today's Report" using simple HTML tables or charts.
+
 ## Current Issues & Bugs (To be Fixed)
-- [ ] **SQL Syntax Errors in Update Queries:** (FIXED in previous commits) Extra commas in `UPDATE` queries for products and categories.
-- [ ] **Empty Best Seller in Reports:** `GetReport` currently returns an empty `BestSeller` object. Need to implement SQL logic to find the most sold product. (FIXED)
 - [ ] **Inconsistent Error Response Format:** Some handlers use `http.Error` (plain text), while others use JSON. Should be standardized to JSON for frontend compatibility.
-- [ ] **Product CategoryID Bug:** (FIXED in previous commits) `GetByID` was resetting `CategoryID` to `0`.
 - [ ] **Standard Library Routing Limitation:** Using `http.HandleFunc("/categories/{id}", ...)` works in Go 1.22+, but `HandleCategoryByID` still manually trims the prefix. It should be updated to use `r.PathValue("id")`.
+- [ ] **Dynamic API Slash Redirect:** Ensure the fix for `/api/` vs `/api` is robust and handled at the middleware or router level.
 
 ## Security & Reliability
 - [ ] **Input Validation:**
@@ -15,31 +35,20 @@ This document outlines current issues, security considerations, and potential en
     - Categories: Ensure `name` is not empty.
     - Transactions: Validate `quantity` against available stock (partially implemented in repository).
 - [ ] **Transaction Management:** Improve `CreateTransaction` to ensure `tx.Rollback()` is always called on error before the function returns (currently uses a `defer` that might be complex to follow).
-- [ ] **Hardcoded Database String:** Ensure all database configurations are strictly from `.env`.
 - [ ] **CORS Policy:** Current `Access-Control-Allow-Origin: "*"` is fine for development but should be restricted in production.
-- [ ] **Authentication/Authorization for all API Endpoints:** Implement robust authentication and authorization mechanisms for all API endpoints beyond just API key for specific handlers.
+- [ ] **Authentication/Authorization:** Implement session-based or JWT-based auth for the Dashboard routes.
 
 ## Simple Improvements (Bootcamp Level)
-- [ ] **Implement Best Seller Logic:** (FIXED)
-    ```sql
-    SELECT p.name, SUM(td.quantity) as qty
-    FROM transaction_details td
-    JOIN products p ON td.product_id = p.id
-    GROUP BY p.name
-    ORDER BY qty DESC LIMIT 1
-    ```
-- [ ] **Standardize JSON Responses:** Create a helper function in `utils/response.go` to send consistent JSON responses (e.g., `{"status": "success", "data": ...}`).
-- [ ] **Add "Active" status to Categories:** Similar to products, categories could have an `active` status to "soft-delete" them.
+- [ ] **Standardize JSON Responses:** Create a helper function in `utils/response.go` to send consistent JSON responses.
+- [ ] **Add "Active" status to Categories:** Similar to products, categories could have an `active` status.
 - [ ] **Refactor Routing:** Use `r.PathValue("id")` for all ID-based endpoints to simplify code.
-- [ ] **Add Recovery Middleware:** Add a middleware to catch panics and return a 500 error instead of crashing the server.
-- [ ] **Error Handling Improvement:** Implement more granular and user-friendly error messages across the application.
+- [ ] **Add Recovery Middleware:** Add a middleware to catch panics and return a 500 error.
 
 ## Future Enhancements
-- [ ] **Add Transaction History Handler (GET /api/transaction):** Implement an endpoint to retrieve a list of past transactions.
-- [ ] **Pagination:** Add `limit` and `offset` to `GetAll` endpoints and for the new transaction history handler.
-- [ ] **Add Customer Name and Contact to Checkout:** Extend the database schema and logic flow to include customer name and contact information during the checkout process.
-- [ ] **API Documentation:** Create a simple Swagger/OpenAPI spec.
-- [ ] **Unit Tests & Integration Tests:** Develop comprehensive unit tests for business logic (Service layer) and integration tests for API endpoints and database interactions.
-- [ ] **Logging Enhancement:** Implement structured logging with different levels (e.g., INFO, DEBUG, ERROR) to aid in debugging and monitoring.
-- [ ] **Product Image Support:** Add functionality to store and retrieve product images.
-- [ ] **User Management:** Implement a basic user management system to handle different roles (e.g., cashier, manager) and access levels.
+- [ ] **Add Transaction History Handler (GET /api/transaction).**
+- [ ] **Pagination:** Add `limit` and `offset` to `GetAll` endpoints.
+- [ ] **Customer Info:** Extend checkout to include customer name and contact.
+- [ ] **API Documentation:** Create a Swagger/OpenAPI spec.
+- [ ] **Unit Tests & Integration Tests.**
+- [ ] **Product Image Support.**
+- [ ] **User Management / Roles.**
