@@ -3,7 +3,9 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"kasir-api/models"
+	"strings"
 )
 
 type ProductRepository struct {

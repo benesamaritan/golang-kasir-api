@@ -87,6 +87,6 @@ func main() {
 
 	err = http.ListenAndServe(":"+config.Port, nil)
 	if err != nil {
-		fmt.Println("gagal running server")
+		fmt.Println("gagal running server:", err)
 	}
 }

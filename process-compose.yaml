@@ -1,5 +1,5 @@
 version: "0.5"
-services:
+processes:
   kasir:
     # Build the Go application before running it
     command: sh -c "go build . && ./kasir-api"
@@ -9,5 +9,3 @@ services:
       - PORT=${PORT:-8000}
       - DB_CONN=${DB_CONN}
       - API_KEY=${API_KEY}
-    ports:
-      - "8000:8000" # Expose the default port
