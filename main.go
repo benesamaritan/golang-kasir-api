@@ -58,6 +58,7 @@ func main() {
 
 	// API Discovery
 	apiHandler := handlers.NewAPIHandler(&registeredRoutes)
+	register("/", apiHandler.Welcome)
 	register("/api", middlewares.CORS(middlewares.Logger(apiHandler.ListRoutes)))
 	http.Handle("/api/", http.RedirectHandler("/api", http.StatusMovedPermanently))
 

@@ -21,3 +21,16 @@ func (h *APIHandler) ListRoutes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(h.Routes)
 }
+
+func (h *APIHandler) Welcome(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Selamat datang di Kasir API",
+		"version": "1.0.0",
+		"docs":    "/api",
+	})
+}
