@@ -48,6 +48,9 @@ This project uses `devbox` to manage its development environment and execution.
 *   **Dependencies:** Managed using `go.mod`. Key dependencies include `github.com/lib/pq` for PostgreSQL database interaction and `github.com/spf13/viper` for robust configuration management.
 *   **Configuration:** The application loads its configuration (e.g., `PORT`, `DB_CONN`, `API_KEY`) from environment variables or a `.env` file using `viper`.
 *   **Architecture:** The codebase adheres to a layered architecture, separating concerns into handlers (API layer), services (business logic), repositories (data access layer), and models (data structures).
+*   **Git Conventions:**
+    *   Always use **Bahasa Indonesia** for git commit messages.
+    *   When the user says "commit changes", it implies committing all current modifications with clear, descriptive messages in Bahasa Indonesia.
 *   **API Design:** The API follows RESTful principles, utilizing standard HTTP methods (GET, POST, PUT, DELETE) and communicating via JSON payloads for requests and responses. A dedicated `/api` endpoint provides dynamic discovery of all registered routes.
 *   **Middleware:** Custom middleware is implemented for essential functionalities such as API key authentication, Cross-Origin Resource Sharing (CORS), and request logging, enhancing security and observability.
 *   **Containerization:** The project is set up for containerization using `devbox` and a `Dockerfile`, facilitating consistent environments across development and potential deployment stages.
