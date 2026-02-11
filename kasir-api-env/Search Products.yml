@@ -1,5 +1,5 @@
 info:
-  name: Get Products By name
+  name: Search Products
   type: http
   seq: 4
 
