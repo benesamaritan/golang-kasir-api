@@ -86,7 +86,7 @@ func main() {
 	register("/api/report", reportHandler.GetReport)
 	register("/api/report/today", reportHandler.GetReportToday)
 	http.Handle("/api/report/hari-ini", http.RedirectHandler("/api/report/today", http.StatusMovedPermanently))
-	register("/api/report/range", reportHandler.GetReportByRange)
+	http.Handle("/api/report/range", http.RedirectHandler("/api/report", http.StatusMovedPermanently))
 
 	// localhost:8080/health
 	register("/health", func(w http.ResponseWriter, r *http.Request) {
