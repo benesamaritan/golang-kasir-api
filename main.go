@@ -65,6 +65,8 @@ func main() {
 	// Setup routes
 	register("/api/product", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
 	register("/api/product/{id}", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
+	http.Handle("/api/produk", http.RedirectHandler("/api/product", http.StatusMovedPermanently))
+	http.Handle("/api/produk/", http.RedirectHandler("/api/product/", http.StatusMovedPermanently))
 
 	transactionRepo := repositories.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
