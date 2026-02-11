@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS products (
@@ -9,6 +10,7 @@ CREATE TABLE IF NOT EXISTS products (
     price INT NOT NULL,
     stock INT NOT NULL,
     category_id INT,
+    active BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 );
 

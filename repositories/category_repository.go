@@ -23,7 +23,7 @@ func (repo *CategoryRepository) Create(category *models.Categories) error {
 
 // Read - GetAll - ambil Kategori
 func (repo *CategoryRepository) GetAll() ([]models.Categories, error) {
-	query := "SELECT id, name, description FROM categories"
+	query := "SELECT id, name, COALESCE(description, '') FROM categories"
 	rows, err := repo.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (repo *CategoryRepository) GetByID(id int) (*models.Categories, error) {
 		SELECT
 			id,
 			name,
-			description,
+			COALESCE(description, ''),
 		    (
 		    	SELECT COUNT(*)
 		    	FROM products

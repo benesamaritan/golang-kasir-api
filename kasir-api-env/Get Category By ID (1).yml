@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{url}}/categories/3"
+  url: "{{url}}/categories/1"
   body:
     type: json
     data: ""

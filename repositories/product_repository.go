@@ -17,7 +17,7 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 }
 
 func (repo *ProductRepository) GetAll(name string, active *bool) ([]models.Product, error) {
-	query := "SELECT id, name, price, stock, category_id, active FROM products"
+	query := "SELECT id, name, price, stock, COALESCE(category_id, 0), active FROM products"
 	whereClauses := []string{}
 	var args []interface{}
 	argCounter := 1
@@ -57,8 +57,8 @@ func (repo *ProductRepository) GetAll(name string, active *bool) ([]models.Produ
 }
 
 func (repo *ProductRepository) Create(product *models.Product) error {
-	query := "INSERT INTO products (name, price, stock, category_id) VALUES ($1, $2, $3, $4) RETURNING id"
-	err := repo.db.QueryRow(query, product.Name, product.Price, product.Stock, product.CategoryID).Scan(&product.ID)
+	query := "INSERT INTO products (name, price, stock, category_id, active) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	err := repo.db.QueryRow(query, product.Name, product.Price, product.Stock, product.CategoryID, product.Active).Scan(&product.ID)
 	return err
 }
 
@@ -70,9 +70,10 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 			products.name,
 			products.price,
 			products.stock,
-			categories.id,
-			categories.name,
-			categories.description 
+			COALESCE(categories.id, 0),
+			COALESCE(categories.name, ''),
+			COALESCE(categories.description, ''),
+			products.active
 		FROM products
 		LEFT JOIN categories
 		ON products.category_id = categories.id
@@ -87,6 +88,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 		&p.CategoryID,
 		&p.CategoryName,
 		&p.CategoryDescription,
+		&p.Active,
 	)
 
 	if err == sql.ErrNoRows {
@@ -101,8 +103,8 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 }
 
 func (repo *ProductRepository) Update(product *models.Product) error {
-	query := "UPDATE products SET name = $1, price = $2, stock = $3, category_id = $4 WHERE id = $5"
-	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.CategoryID, product.ID)
+	query := "UPDATE products SET name = $1, price = $2, stock = $3, category_id = $4, active = $5 WHERE id = $6"
+	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.CategoryID, product.Active, product.ID)
 
 	if err != nil {
 		return err

@@ -5,13 +5,16 @@ info:
 
 http:
   method: GET
-  url: "{{url}}/api/produk?name=es"
+  url: "{{url}}/api/produk?name=es&active=true"
   headers:
     - name: X-API-Key
       value: secret
   params:
     - name: name
       value: es
+      type: query
+    - name: active
+      value: "true"
       type: query
   auth: inherit
 
