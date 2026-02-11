@@ -13,7 +13,8 @@ http:
         "name": "",
         "price": ,
         "stock": ,
-        "category_id": 
+        "category_id": ,
+        "active": true
       }
   auth: inherit
 
