@@ -30,7 +30,7 @@ func (h *APIHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Selamat datang di Kasir API",
-		"version": "1.0.0",
+		"version": "0.1",
 		"docs":    "/api",
 	})
 }
