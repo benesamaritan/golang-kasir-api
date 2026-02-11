@@ -95,10 +95,10 @@ func main() {
 			"message": "API Running",
 		})
 	})
-	fmt.Println("Server running di localhost:" + config.Port)
+	fmt.Println("Server berjalan di localhost:" + config.Port)
 
 	err = http.ListenAndServe(":"+config.Port, nil)
 	if err != nil {
-		fmt.Println("Gagal running server:", err)
+		fmt.Println("Gagal menjalankan server:", err)
 	}
 }

@@ -20,7 +20,7 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 	ctx := context.Background()
 	tx, err := repo.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+		return nil, fmt.Errorf("Gagal memulai transaksi: %w", err)
 	}
 
 	defer func() {
@@ -89,30 +89,30 @@ func (repo *TransactionRepository) processItem(
 		&stock,
 	)
 	if err == sql.ErrNoRows {
-		return nil, fmt.Errorf("product id %d not found", item.ProductID)
+		return nil, fmt.Errorf("ID produk %d tidak ditemukan", item.ProductID)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get product info: %w", err)
+		return nil, fmt.Errorf("Gagal mendapatkan informasi produk: %w", err)
 	}
 
 	if stock < item.Quantity {
-		return nil, fmt.Errorf("stock product %s is not enough (available %d)", productName, stock)
+		return nil, fmt.Errorf("Stok produk %s tidak mencukupi (tersedia %d)", productName, stock)
 	}
 
 	subtotal := item.Quantity * price
 
 	res, err := tx.ExecContext(ctx, "UPDATE products SET stock = stock - $1 WHERE id = $2", item.Quantity, item.ProductID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update stock: %w", err)
+		return nil, fmt.Errorf("Gagal memperbarui stok: %w", err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get affected rows: %w", err)
+		return nil, fmt.Errorf("Gagal mendapatkan jumlah baris terdampak: %w", err)
 	}
 
 	if rowsAffected == 0 {
-		return nil, fmt.Errorf("failed to update stock for product id %d", item.ProductID)
+		return nil, fmt.Errorf("Gagal memperbarui stok untuk ID produk %d", item.ProductID)
 	}
 
 	return &models.TransactionDetail{
@@ -144,7 +144,7 @@ func (repo *TransactionRepository) insertTransaction(
 		&createdAt,
 	)
 	if err != nil {
-		return 0, time.Time{}, fmt.Errorf("failed to insert transaction: %w", err)
+		return 0, time.Time{}, fmt.Errorf("Gagal memasukkan transaksi: %w", err)
 	}
 
 	return transactionID, createdAt, nil
@@ -162,7 +162,7 @@ func (repo *TransactionRepository) insertTransactionDetails(
 		"INSERT INTO transaction_details (transaction_id, product_id, quantity, subtotal) VALUES ($1, $2, $3, $4)",
 	)
 	if err != nil {
-		return fmt.Errorf("failed to prepare transaction detail statement: %w", err)
+		return fmt.Errorf("Gagal menyiapkan pernyataan detail transaksi: %w", err)
 	}
 	defer stmt.Close()
 
@@ -175,7 +175,7 @@ func (repo *TransactionRepository) insertTransactionDetails(
 			detail.Subtotal,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to insert transaction detail: %w", err)
+			return fmt.Errorf("Gagal memasukkan detail transaksi: %w", err)
 		}
 	}
 	return nil
