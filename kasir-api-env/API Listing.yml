@@ -1,7 +1,7 @@
 info:
   name: API Listing
   type: http
-  seq: 14
+  seq: 2
 
 http:
   method: GET

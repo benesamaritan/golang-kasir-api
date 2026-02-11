@@ -1,7 +1,7 @@
 info:
   name: Get Category By ID (1)
   type: http
-  seq: 8
+  seq: 9
 
 http:
   method: GET
