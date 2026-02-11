@@ -63,8 +63,8 @@ func main() {
 	http.Handle("/api/", http.RedirectHandler("/api", http.StatusMovedPermanently))
 
 	// Setup routes
-	register("/api/produk", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
-	register("/api/produk/{id}", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
+	register("/api/product", middlewares.CORS(middlewares.Logger(productHandler.HandleProducts)))
+	register("/api/product/{id}", middlewares.CORS(middlewares.Logger(apiKeyMiddleware(productHandler.HandleProductByID))))
 
 	transactionRepo := repositories.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
@@ -84,7 +84,8 @@ func main() {
 	reportService := services.NewReportService(reportRepo)
 	reportHandler := handlers.NewReportHandler(reportService)
 	register("/api/report", reportHandler.GetReport)
-	register("/api/report/hari-ini", reportHandler.GetReportToday)
+	register("/api/report/today", reportHandler.GetReportToday)
+	http.Handle("/api/report/hari-ini", http.RedirectHandler("/api/report/today", http.StatusMovedPermanently))
 	register("/api/report/range", reportHandler.GetReportByRange)
 
 	// localhost:8080/health

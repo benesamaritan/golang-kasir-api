@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{url}}/api/report/hari-ini"
+  url: "{{url}}/api/report/today"
   auth: inherit
 
 settings:

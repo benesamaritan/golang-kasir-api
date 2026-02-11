@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{url}}/api/produk/1"
+  url: "{{url}}/api/product/1"
   headers:
     - name: X-API-Key
       value: secret

@@ -7,7 +7,7 @@ This document outlines current issues, security considerations, and potential en
     - [ ] `GET /api/transactions`: List all transaction history (currently only `POST /api/checkout` exists).
     - [ ] `GET /api/transactions/{id}`: Get detailed information for a specific transaction including its items.
 - [ ] **Advanced Product & Category Features:**
-    - [ ] `PATCH /api/produk/{id}/active`: Dedicated endpoint to toggle product active status without sending full body.
+    - [ ] `PATCH /api/product/{id}/active`: Dedicated endpoint to toggle product active status without sending full body.
     - [ ] `GET /api/categories/{id}/products`: List all products belonging to a specific category.
 - [ ] **Enhanced Reporting:**
     - [ ] `GET /api/report/range?from=YYYY-MM-DD&to=YYYY-MM-DD`: Get sales report for a specific date range.

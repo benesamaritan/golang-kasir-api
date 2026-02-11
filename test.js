@@ -54,7 +54,7 @@ export default function () {
 
   // 3. Products Listing
   group('Products API', function () {
-    const res = http.get(`${BASE_URL}/api/produk`);
+    const res = http.get(`${BASE_URL}/api/product`);
     productLatency.add(res.timings.duration);
     check(res, {
       'products: status is 200': (r) => r.status === 200,
